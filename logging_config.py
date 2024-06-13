@@ -6,7 +6,7 @@ import os
 ROOT_DIR = os.getcwd()
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter(
     '%(asctime)s UTC - %(levelname)s - %(module)s:%(funcName)s:%(lineno)d - %(message)s')

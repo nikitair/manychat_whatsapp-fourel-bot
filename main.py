@@ -2,10 +2,9 @@ from fastapi import FastAPI, Query
 import uvicorn
 from logging_config import logger
 import services
-import httpx
+import schemas
 
 app = FastAPI()
-
 
 
 @app.get("/")
@@ -15,9 +14,15 @@ async def index():
 
 
 @app.get("/brokers")
-async def get_broker():
+async def get_broker() -> schemas.BrokersResponse:
     logger.info("GET REGISTERED BROKERS API TRIGGERED")
     return services.get_brokers_emails()
+
+
+@app.post("/brokers/register")
+async def register_broker(request: schemas.RegisterBroker) -> schemas.RegisterBrokerResponse:
+    logger.info("REGISTER BROKER API TRIGGERED")
+    return services.register_broker(request)
 
 
 if __name__ == "__main__":
