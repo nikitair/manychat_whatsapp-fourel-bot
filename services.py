@@ -1,6 +1,7 @@
 import httpx
 from logging_config import logger
 import schemas
+import sql_handler as sql
 
 NOTION_API_HEADERS = {
     "Authorization": "Bearer secret_hcJF8bCOLP1ZcOR54a8kmWJ0dFMssHjEOWhSnvA0mN2",
@@ -150,6 +151,16 @@ def register_broker(request: schemas.RegisterBroker):
         # Now create a new database on the created page
         database_response = create_whatsapp_bot_database(page_id)
         if database_response:
+            
+            # insert to database
+            sql.sql_insert_broker(
+                email=email,
+                phone_number=phone_number,
+                name=name,
+                page_id=page_id,
+                database_id=database_response["id"]
+            )
+            
             return {
                 "page_id": page_id,
                 "database_id": database_response["id"]
@@ -195,6 +206,14 @@ def insert_quote_request(request):
 
     if status_code == 200:
         logger.debug(f"RAW NOTION API RESPONSE - {response.json()}")
+        
+        broker_id = sql.get_broker_id(database_id=database_id)
+        logger.info(f"SQL BROKER ID - {broker_id}")
+        if broker_id:
+            sql.sql_insert_quote(
+                quote_body=quote_body,
+                broker_id=broker_id
+            )
     else:
         logger.error(f"!!! NOTION API ERROR - {response.text}")
         result["success"] = False

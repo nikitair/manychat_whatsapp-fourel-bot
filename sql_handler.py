@@ -82,6 +82,37 @@ def sql_insert_quote(quote_body, broker_id):
         if conn:
             conn.close()
         logger.debug("CLOSED DB CONNECTION")
+        
+        
+        
+def get_broker_id(database_id):
+    try:
+        # Step 1: Connect to SQLite database
+        conn = sqlite3.connect('whatsapp_bot.db')
+        
+        # Step 2: Create a cursor object using the cursor() method
+        cursor = conn.cursor()
+        
+        # Step 3: Execute the SELECT statement
+        cursor.execute('''SELECT id FROM brokers WHERE database_id = ?''', (database_id,))
+        
+        # Fetch the result (assuming there should be only one row)
+        broker_id = cursor.fetchone()
+        
+        if broker_id:
+            return broker_id[0]  # Return the first column value (broker_id)
+        else:
+            print(f"No broker found with database_id {database_id}")
+            return None
+        
+    except sqlite3.Error as e:
+        print(f"Error retrieving broker_id: {e}")
+        return None
+        
+    finally:
+        # Step 4: Close the database connection
+        if conn:
+            conn.close()
     
     
 if __name__ == "__main__":
