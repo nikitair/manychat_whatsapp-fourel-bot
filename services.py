@@ -160,7 +160,8 @@ def register_broker(request: schemas.RegisterBroker):
 
 def insert_quote_request(request):
     result = {
-        "success": False
+        "success": True,
+        "error": None
     }
 
     database_id = request.database_id
@@ -194,9 +195,10 @@ def insert_quote_request(request):
     
     if status_code == 200:
         logger.debug(f"RAW NOTION API RESPONSE - {response.json()}")
-        result["success"] = True
     else:
         logger.error(f"!!! NOTION API ERROR - {response.text}")
+        result["success"] = False
+        result["error"] = response.text
         
     return result
 

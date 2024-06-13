@@ -23,3 +23,4 @@ class InsertQuoteRequest(BaseModel):
 
 class InsertQuoteRequestResponse(BaseModel):
     success: bool
+    error: str | None = None
