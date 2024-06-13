@@ -206,6 +206,11 @@ def insert_quote_request(request):
 def search_broker_by_email(email):
     logger.info(f"SEARCH BROKER BY EMAIL - {email}")
     URL = f"https://api.notion.com/v1/databases/{BROKERS_DATABASE_ID}/query"
+    
+    result = {
+        "page_id": None,
+        "database_id": None
+    }
 
     payload = {
         "filter": {
@@ -225,17 +230,19 @@ def search_broker_by_email(email):
         results = data.get('results', [])
         if results:
             broker_page_id = results[0]['id']
+            result["page_id"] = broker_page_id
             logger.info(f"Broker page found. Page ID: {broker_page_id}")
             
             whatsapp_bot_db_id = get_whatsapp_bot_database_id(broker_page_id)
+            result["database_id"] = whatsapp_bot_db_id
             
-            return whatsapp_bot_db_id
         else:
             logger.error("Broker not found.")
-            return None
     else:
         logger.error(f"Failed to search broker: {response.text}")
-        return None
+        
+    return result
+
 
 def get_whatsapp_bot_database_id(page_id):
     logger.info(f"GET WHATSAPP BOT DATABASE ID ON PAGE - {page_id}")
