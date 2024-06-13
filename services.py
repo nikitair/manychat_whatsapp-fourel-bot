@@ -249,24 +249,28 @@ def get_broker_database(email):
     logger.info(f"BROKER PAGE ID - {page_id}")
     
     if page_id:
-        URL = f"https://api.notion.com/v1/pages/{page_id}"
+        result['page_id'] = page_id
+        
+        URL = f"https://api.notion.com/v1/blocks/{page_id}/children"
         response = httpx.get(URL, headers=NOTION_API_HEADERS)
 
         if response.status_code == 200:
-            data = response.json()
+            data = response.json().get("results", [])
             logger.debug(f"RAW PAGE DATA - {data}")
-
-            database_id = data.get('parent', {}).get('database_id')
-            if database_id:
-                result['page_id'] = page_id
-                result['database_id'] = database_id
-                return result
-            else:
-                logger.error(f"! Database ID not found for page ID: {page_id}")
+            
+            if data:
+                for item in data:
+                    if item.get('child_database') and item['child_database']['title'] == 'WhatsApp Bot':
+                        database_id = item['id']
+                        break
+                if database_id:
+                    result['database_id'] = database_id
+                else:
+                    logger.error(f"! Database ID not found for page ID: {page_id}")
         else:
-            logger.error(f"!!! Failed to fetch page data. Status code: {response.status_code}, Response: {response.text}")
+            logger.error(f"!!! NOTION API ERROR. Status code: {response.status_code}, Response: {response.text}")
     return result
 
 
 if __name__ == "__main__":
-    print(get_broker_database("test@testt.com"))
+    print(get_broker_database("string"))
