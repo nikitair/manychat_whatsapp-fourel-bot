@@ -84,10 +84,12 @@ def create_whatsapp_bot_database(page_id):
     if status_code == 200:
         new_database = response.json()
         logger.debug(f"RAW NEW DATABASE DATA - {new_database}")
-        logger.info(f"WhatsApp Bot database created successfully. Database ID: {new_database['id']}")
+        logger.info(f"WhatsApp Bot database created successfully. Database ID: {
+                    new_database['id']}")
         return new_database
     else:
-        logger.error(f"Failed to create WhatsApp Bot database: {response.text}")
+        logger.error(f"Failed to create WhatsApp Bot database: {
+                     response.text}")
         return None
 
 
@@ -188,95 +190,85 @@ def insert_quote_request(request):
             }
         }
     }
-    
+
     response = httpx.post(URL, headers=NOTION_API_HEADERS, json=PAYLOAD)
     status_code = response.status_code
     logger.info(f"NOTION API STATUS CODE - {status_code}")
-    
+
     if status_code == 200:
         logger.debug(f"RAW NOTION API RESPONSE - {response.json()}")
     else:
         logger.error(f"!!! NOTION API ERROR - {response.text}")
         result["success"] = False
         result["error"] = response.text
-        
+
     return result
 
 
-def search_broker_by_email(email):
-    logger.info(f"SEARCH BROKER BY EMAIL - {email}")
+def get_broker_page(email):
+    logger.info(f"GET BROKER PAGE - {email}")
+
     URL = f"https://api.notion.com/v1/databases/{BROKERS_DATABASE_ID}/query"
+
+    PAYLOAD = {
+        "filter": {
+            "property": "Email",
+            "title": {
+                "equals": email
+            }
+        }
+    }
+
+    response = httpx.post(URL, headers=NOTION_API_HEADERS, json=PAYLOAD)
+    status_code = response.status_code
+
+    logger.info(f"STATUS CODE - {status_code}")
+
+    if status_code == 200:
+        data = response.json()
+        logger.debug(f"RAW NOTION API RESPONSE - {data}")
+
+        if len(data.get('results', [])) > 0:
+            page_id = data['results'][0]['id']
+            return page_id
+        else:
+            return None
+    else:
+        logger.error(f"!!! NOTION API ERROR - {response.text}")
+        return None
+
+
+
+def get_broker_database(email):
+    logger.info(f"GET BROKER DATABASE - {email}")
     
     result = {
         "page_id": None,
         "database_id": None
     }
+    
+    page_id = get_broker_page(email)
+    logger.info(f"BROKER PAGE ID - {page_id}")
+    
+    if page_id:
+        URL = f"https://api.notion.com/v1/pages/{page_id}"
+        response = httpx.get(URL, headers=NOTION_API_HEADERS)
 
-    payload = {
-        "filter": {
-            "property": "Email",
-            "text": {
-                "contains": email
-            }
-        }
-    }
+        if response.status_code == 200:
+            data = response.json()
+            logger.debug(f"RAW PAGE DATA - {data}")
 
-    response = httpx.post(URL, headers=NOTION_API_HEADERS, json=payload)
-    status_code = response.status_code
-    logger.info(f"NOTION API STATUS CODE - {status_code}")
-
-    if status_code == 200:
-        data = response.json()
-        results = data.get('results', [])
-        if results:
-            broker_page_id = results[0]['id']
-            result["page_id"] = broker_page_id
-            logger.info(f"Broker page found. Page ID: {broker_page_id}")
-            
-            whatsapp_bot_db_id = get_whatsapp_bot_database_id(broker_page_id)
-            result["database_id"] = whatsapp_bot_db_id
-            
+            database_id = data.get('parent', {}).get('database_id')
+            if database_id:
+                result['page_id'] = page_id
+                result['database_id'] = database_id
+                return result
+            else:
+                logger.error(f"! Database ID not found for page ID: {page_id}")
         else:
-            logger.error("Broker not found.")
-    else:
-        logger.error(f"Failed to search broker: {response.text}")
-        
+            logger.error(f"!!! Failed to fetch page data. Status code: {response.status_code}, Response: {response.text}")
     return result
 
 
-def get_whatsapp_bot_database_id(page_id):
-    logger.info(f"GET WHATSAPP BOT DATABASE ID ON PAGE - {page_id}")
-    URL = f"https://api.notion.com/v1/pages/{page_id}"
-
-    response = httpx.get(URL, headers=NOTION_API_HEADERS)
-    status_code = response.status_code
-    logger.info(f"NOTION API STATUS CODE - {status_code}")
-
-    if status_code == 200:
-        data = response.json()
-        children = data.get('children', [])
-
-        for child in children:
-            if child.get('type') == 'database':
-                whatsapp_bot_db_id = child['id']
-                logger.info(f"WhatsApp Bot database found. Database ID: {whatsapp_bot_db_id}")
-                return whatsapp_bot_db_id
-        
-        logger.warning("WhatsApp Bot database not found on the page.")
-        return None
-    else:
-        logger.error(f"Failed to get page details: {response.text}")
-        return None
-
-
-
-
 if __name__ == "__main__":
-    # print(get_broker_by_email("test2@test.com"))
-    # print(get_brokers_emails())
-
-    print(register_broker(
-        email="test@test.com",
-        phone_number="+123456789",
-        name="Test"
-    ))
+    print(get_broker_database("test@testt.com"))
