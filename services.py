@@ -84,12 +84,10 @@ def create_whatsapp_bot_database(page_id):
     if status_code == 200:
         new_database = response.json()
         logger.debug(f"RAW NEW DATABASE DATA - {new_database}")
-        logger.info(f"WhatsApp Bot database created successfully. Database ID: {
-                    new_database['id']}")
+        logger.info(f"WhatsApp Bot database created successfully. Database ID: {new_database['id']}")
         return new_database
     else:
-        logger.error(f"Failed to create WhatsApp Bot database: {
-                     response.text}")
+        logger.error(f"Failed to create WhatsApp Bot database: {response.text}")
         return None
 
 
