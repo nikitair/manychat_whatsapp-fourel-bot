@@ -19,6 +19,6 @@ def ai_transcript_audio_to_text(audio_file_path: str) -> str | None:
                 model="whisper-1", 
                 file=audio_file
             )
-            return transcription
+            return transcription.text
         except Exception as ex:
             logger.exception(f"!!! OPEN AI API ERROR - {ex}")
