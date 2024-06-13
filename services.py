@@ -69,13 +69,10 @@ def create_whatsapp_bot_database(page_id):
         ],
         "properties": {
             "Quote Body": {
-                "rich_text": {}
+                "title": {}
             },
             "Created at": {
                 "created_time": {}
-            },
-            "Notes": {
-                "title": {}
             }
         }
     }
@@ -180,7 +177,7 @@ def insert_quote_request(request):
         },
         "properties": {
             "Quote Body": {
-                "rich_text": [
+                "title": [
                     {
                         "type": "text",
                         "text": {
