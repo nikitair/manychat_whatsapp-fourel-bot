@@ -2,6 +2,9 @@ import httpx
 from logging_config import logger
 import schemas
 import sql_handler as sql
+import ai
+import utils
+import os
 
 NOTION_API_HEADERS = {
     "Authorization": "Bearer secret_hcJF8bCOLP1ZcOR54a8kmWJ0dFMssHjEOWhSnvA0mN2",
@@ -288,6 +291,33 @@ def get_broker_database(email):
                     logger.error(f"! Database ID not found for page ID: {page_id}")
         else:
             logger.error(f"!!! NOTION API ERROR. Status code: {response.status_code}, Response: {response.text}")
+    return result
+
+
+def convert_voice_to_text(request: schemas.VoiceToText):
+    audio_url = request.audio_url
+    logger.info(f"CONVERT VOICE TO TEXT - {audio_url}")
+    result = {
+        "text": audio_url
+    }
+    
+    # download audio
+    audio_file_path = utils.download_audio(audio_url)
+    logger.info(f"DOWNLOADED AUDIO FILE PATH - {audio_file_path}")
+    if audio_file_path:
+        # transcript with open ai api
+        transcription = ai.ai_transcript_audio_to_text(audio_file_path)
+        logger.info(f"OPEN AI TRANSCRIPTION - {transcription}")
+        
+        if transcription:
+            result["text"] = transcription
+            
+        # delete old audio file
+        try:
+            os.remove(audio_file_path)
+        except Exception as ex:
+            logger.exception(f"!!! FAILED DELETING AUDIO FILE - {ex}")
+            
     return result
 
 

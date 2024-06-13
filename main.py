@@ -34,7 +34,13 @@ async def insert_quote_request(request: schemas.InsertQuoteRequest) -> schemas.I
 @app.get(path="/broker")
 async def get_broker_by_email(email = Query(description="Email of a searched Broker")) -> schemas.GetBrokerResponse:
     logger.info("GET BROKER BY EMAIL API TRIGGERED")
-    return services.get_broker_database(email)    
+    return services.get_broker_database(email)
+
+
+@app.post("/voice-to-text")
+async def transcript_voice_to_text(request: schemas.VoiceToText) -> schemas.VoiceToTextResponse:
+    logger.info("VOICE TO TEXT API TRIGGERED")
+    return services.convert_voice_to_text(request)
 
 
 if __name__ == "__main__":

@@ -29,3 +29,11 @@ class InsertQuoteRequestResponse(BaseModel):
 class GetBrokerResponse(BaseModel):
     page_id: str | None = None
     database_id: str | None = None
+
+
+class VoiceToText(BaseModel):
+    audio_url: str
+    
+    
+class VoiceToTextResponse(BaseModel):
+    text: str
