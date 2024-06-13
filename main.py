@@ -31,11 +31,8 @@ async def insert_quote_request(request: schemas.InsertQuoteRequest) -> schemas.I
     return services.insert_quote_request(request)
 
 
-@app.get(
-    path="/broker",
-    email = Query(description="Email of a searched Broker")
-    )
-async def get_broker_by_email(email) -> schemas.GetBrokerResponse:
+@app.get(path="/broker")
+async def get_broker_by_email(email = Query(description="Email of a searched Broker")) -> schemas.GetBrokerResponse:
     logger.info("GET BROKER BY EMAIL API TRIGGERED")
     return services.search_broker_by_email(email)    
 
