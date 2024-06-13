@@ -19,7 +19,7 @@ file_handler = logging.FileHandler(logs_file_path)
 # logtrail_handler = LogtailHandler(source_token=LOGTRAIL_API_KEY)
 
 # Terminal output
-terminal_handler.setLevel(logging.DEBUG)
+terminal_handler.setLevel(logging.INFO)
 terminal_handler.setFormatter(formatter)
 logger.addHandler(terminal_handler)
 
