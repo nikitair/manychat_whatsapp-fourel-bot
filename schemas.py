@@ -14,3 +14,12 @@ class RegisterBroker(BaseModel):
 class RegisterBrokerResponse(BaseModel):
     page_id: str
     database_id: str
+
+
+class InsertQuoteRequest(BaseModel):
+    database_id: str
+    quote_body: str
+
+
+class InsertQuoteRequestResponse(BaseModel):
+    success: bool
