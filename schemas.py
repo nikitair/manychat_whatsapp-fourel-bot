@@ -27,5 +27,5 @@ class InsertQuoteRequestResponse(BaseModel):
     
     
 class GetBrokerResponse(BaseModel):
-    page_id: str
-    database_id: str
+    page_id: str | None = None
+    database_id: str | None = None
