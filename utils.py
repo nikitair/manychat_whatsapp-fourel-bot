@@ -13,7 +13,7 @@ def download_audio(audio_url) -> str | None:
     
     if status_code == 200:
         audio_data = response.content
-        file_name = f"{str(int(time.time))}_audio.ogg"
+        file_name = f"{int(time.time)}_audio.ogg"
         
         with open(file_name, "wb") as file:
             file.write(audio_data)

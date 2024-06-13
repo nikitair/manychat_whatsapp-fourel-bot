@@ -315,6 +315,7 @@ def convert_voice_to_text(request: schemas.VoiceToText):
         # delete old audio file
         try:
             os.remove(audio_file_path)
+            logger.info(f"FILE DELETED - {audio_file_path}")
         except Exception as ex:
             logger.exception(f"!!! FAILED DELETING AUDIO FILE - {ex}")
             
