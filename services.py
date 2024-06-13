@@ -164,7 +164,7 @@ def insert_quote_request(request: schemas.InsertQuoteRequest):
     }
 
     database_id = request.database_id
-    quote_body: request.quote_body
+    quote_body = request.quote_body
 
     logger.info(f"INSERT QUOTE REQUEST TO DB - {database_id}")
     logger.info(f"INSERT DATA - {quote_body}")
