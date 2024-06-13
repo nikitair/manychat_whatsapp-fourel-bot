@@ -24,3 +24,8 @@ class InsertQuoteRequest(BaseModel):
 class InsertQuoteRequestResponse(BaseModel):
     success: bool
     error: str | None = None
+    
+    
+class GetBrokerResponse(BaseModel):
+    page_id: str
+    database_id: str
