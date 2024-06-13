@@ -158,7 +158,7 @@ def register_broker(request: schemas.RegisterBroker):
         logger.error(f"Failed to insert record: {response.text}")
 
 
-def insert_quote_request(request: schemas.InsertQuoteRequest):
+def insert_quote_request(request):
     result = {
         "success": False
     }
@@ -178,7 +178,7 @@ def insert_quote_request(request: schemas.InsertQuoteRequest):
             "Quote Body": {
                 "title": [
                     {
-                        "type": "title",
+                        "type": "text",
                         "text": {
                             "content": quote_body
                         }
