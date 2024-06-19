@@ -31,26 +31,46 @@ def sql_save_quote(email: str,
                    ) -> bool:
     logger.info(f"SQL INSERT QUOTE - ({email} | {quote_body} | p:{page_id} | d:{database_id})")
     
-    query = """
-        INSERT INTO whatsapp_quotes
-        (
-            email, 
-            phone_number, 
-            broker_name,
-            quote_body,
-            page_id,
-            database_id
-        )
-        VALUES
-        (
-            %s,
-            %s,
-            %s,
-            %s,
-            %s,
-            %s
-        );
-    """
+    if page_id and database_id:
+    
+        query = """
+            INSERT INTO whatsapp_quotes
+            (
+                email, 
+                phone_number, 
+                broker_name,
+                quote_body,
+                page_id,
+                database_id
+            )
+            VALUES
+            (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s
+            );
+        """
+    else:
+        query = """
+            INSERT INTO whatsapp_quotes
+            (
+                email, 
+                phone_number, 
+                broker_name,
+                quote_body
+            )
+            VALUES
+            (
+                %s,
+                %s,
+                %s,
+                %s
+            );
+        """
+        
     insert_result = postgres.execute_with_connection(
         func=postgres.insert_executor,
         query=query,
