@@ -53,6 +53,7 @@ def sql_save_quote(email: str,
                 %s
             );
         """
+        params = ([email, phone_number, quote_body, page_id, database_id])
     else:
         query = """
             INSERT INTO whatsapp_quotes
@@ -70,10 +71,11 @@ def sql_save_quote(email: str,
                 %s
             );
         """
-        
+        params = ([email, phone_number, quote_body])
+    logger.info(f"QUERY => {query}")
     insert_result = postgres.execute_with_connection(
         func=postgres.insert_executor,
         query=query,
-        params=([email, phone_number, quote_body, page_id, database_id])
+        params=params
     )
     return insert_result
