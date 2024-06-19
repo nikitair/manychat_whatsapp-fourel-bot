@@ -43,6 +43,12 @@ def notion_sync_brokers() -> schemas.NotionSyncBrokersResponse:
     return services.sync_brokers()
 
 
+@app.post("/sync/quotes")
+def notion_sync_brokers() -> schemas.NotionSyncQuotesResponse:
+    logger.info(f"**** API NOTION SYNC QUOTES TRIGGERED")
+    return services.sync_quotes()
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=FastAPI)
     # uvicorn.run("main:app", host="127.0.0.1", port=8080, reload=True)

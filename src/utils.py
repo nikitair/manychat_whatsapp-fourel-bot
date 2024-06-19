@@ -248,7 +248,7 @@ def notion_register_broker(email: str, phone_number: str, broker_name: str) -> d
         
         
 def sql_update_broker_notion_status(email: str, page_id: str, database_id: str) -> bool:
-    logger.info(f"SQL UPDATE NOTION STATUS - ({email} | p: {page_id} | d: {database_id})")
+    logger.info(f"SQL UPDATE BROKER NOTION STATUS - ({email} | p: {page_id} | d: {database_id})")
     query = f"""
         UPDATE whatsapp_brokers
         SET
@@ -294,3 +294,83 @@ def sql_get_brokers_for_notion_sync() -> list:
                 }
             )
     return brokers
+
+
+def sql_get_quotes_for_notion_sync() -> list:
+    logger.info(f"SQL GET QUOTES FOR NOTION SYNCHRONIZATION")
+    query = """
+        SELECT
+            quotes.quote_body,
+            quotes.id,
+            brokers.database_id,
+            brokers.email
+        FROM
+            whatsapp_quotes quotes
+        LEFT JOIN whatsapp_brokers brokers
+            ON quotes.broker_id = brokers.id
+        WHERE
+            quotes.in_notion = FALSE
+    """
+    brokers = []
+    raw_response = postgres.execute_with_connection(
+        func=postgres.select_executor,
+        query=query
+    )
+    logger.debug(f"SQL RAW RESPONSE - ({raw_response})")
+    if raw_response:
+        for item in raw_response:
+            brokers.append(
+                {
+                    "quote_body": item[0],
+                    "quote_id": item[1],
+                    "database_id": item[2],
+                    "email": item[3]
+                }
+            )
+    return brokers
+
+
+def notion_insert_quote(quote_body: str, database_id: str, email: str) -> bool:
+    logger.info(f"NOTION INSERT QUOTE - ({email} | {quote_body}; d_id: {database_id})")
+    payload = {
+        'parent': { 'database_id': database_id },
+        'properties': {
+            'Quote Body': {
+                'title': [
+                    {
+                        'text': { 'content': quote_body }
+                    }
+                ]
+            }
+        }
+    }
+    response = httpx.post(
+        url="https://api.notion.com/v1/pages",
+        headers=NOTION_API_HEADERS,
+        json=payload
+    )
+    status_code = response.status_code
+    logger.info(f"NOTION API STATUS CODE - ({status_code})")
+    if status_code == 200:
+        logger.info(f"NOTION SUCCESSFULLY INSERTED QUOTES DATABASE - ({email} | {quote_body}; d_id: {database_id})")
+        return True
+    else:
+        logger.error(f"!!! FAILED INSERTING QUOTE - ({email} | {quote_body}; d_id: {database_id}) - {response.text}")
+        
+        
+        
+def sql_update_quote_notion_status(quote_id: int, email: str, quote_body: str) -> bool:
+    logger.info(f"SQL UPDATE QUOTE NOTION STATUS - ({email} | id: {quote_id} | {quote_body})")
+    query = f"""
+        UPDATE whatsapp_quotes
+        SET
+            in_notion = TRUE
+        WHERE
+            id = '{quote_id}'
+    """
+    postgres_response = postgres.execute_with_connection(
+        func=postgres.update_executor,
+        query=query
+    )
+    logger.info(f"SQL POSTGRES UPDATE RESPONSE - ({postgres_response})")
+    return postgres_response

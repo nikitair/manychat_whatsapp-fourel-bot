@@ -118,6 +118,50 @@ def sync_brokers():
                 logger.info(f"BROKER - ({email}) SUCCESSFULLY SYNCHRONIZED")
                 result["sync_brokers"].append(broker)
     return result
+
+
+def sync_quotes():
+    logger.info(f"SYNCHRONIZE QUOTES WITH NOTION")
+    result = {
+        "sync_quotes": []
+        }
+    
+    # get quotes to sync
+    quotes_to_sync = utils.sql_get_quotes_for_notion_sync()
+    logger.info(f"{len(quotes_to_sync)} QOUTES FOUND FOR SYNC")
+    logger.info(f"QUOTES TO SYNC - ({quotes_to_sync})")
+    if not quotes_to_sync:
+        logger.warning("NO QUOTES TO SYNC")
+        return result
+    
+    # iterate through brokers
+    for i, quote in enumerate(quotes_to_sync, start=1):
+        quote_body = quote["quote_body"]
+        quote_id = quote["quote_id"]
+        database_id = quote["database_id"]
+        email = quote["email"]
+        
+        logger.info(f"QUOTE #{i}: ({email} | {quote_body} | d_id: {database_id})")
+        
+        # insert to notion
+        inserted = utils.notion_insert_quote(
+            quote_body=quote_body,
+            database_id=database_id,
+            email=email
+        )
+        logger.info(f"NOTION INSERTION RESULT - ({inserted})")
+        if inserted:
+            
+            #update DB
+            updated = utils.sql_update_quote_notion_status(
+                quote_id=quote_id,
+                email=email,
+                quote_body=quote_body
+            )
+            if updated:
+                logger.info(f"QUOTE - ({email} | id: {quote_id} | {quote_body}) SUCCESSFULLY SYNCHRONIZED")
+                result["sync_quotes"].append(quote)
+    return result
         
         
 

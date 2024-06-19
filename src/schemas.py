@@ -34,3 +34,7 @@ class VoiceToTextResponse(BaseModel):
 
 class NotionSyncBrokersResponse(BaseModel):
     sync_brokers: list[dict]
+    
+    
+class NotionSyncQuotesResponse(BaseModel):
+    sync_quotes: list[dict]
