@@ -1,7 +1,7 @@
 import httpx
-from logging_config import logger
+from src.config.logging_config import logger
 import schemas
-import sql_handler as sql
+import src.database.sqlite_handler as sql
 import ai
 import utils
 import os

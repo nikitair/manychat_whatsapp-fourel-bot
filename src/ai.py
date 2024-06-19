@@ -1,5 +1,5 @@
 import openai
-from logging_config import logger
+from src.config.logging_config import logger
 
 API_KEY = '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'
 

@@ -1,5 +1,5 @@
 import sqlite3
-from logging_config import logger
+from src.config.logging_config import logger
 
 
 def sql_create_database():

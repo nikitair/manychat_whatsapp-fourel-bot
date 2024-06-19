@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
 import uvicorn
-from logging_config import logger
+from src.config.logging_config import logger
 import services
 import schemas
 

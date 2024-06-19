@@ -3,3 +3,4 @@ httpx
 requests
 openai
 pydub
+psycopg2-binary

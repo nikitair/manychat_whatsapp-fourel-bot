@@ -2,7 +2,7 @@ import httpx
 import time
 import io
 from pydub import AudioSegment
-from logging_config import logger
+from src.config.logging_config import logger
 
     
 def download_audio(audio_url) -> str | None:
