@@ -66,14 +66,14 @@ class PostgresHandler:
         finally:
             return data
 
-    def insert_executor(self, query: str, params: list[tuple]):
+    def insert_executor(self, query: str, params: tuple):
         logger.debug(
             f"({self.__class__.__name__}) - EXECUTING INSERT QUERY: {query} - INSERT PARAMS: {params}")
 
         cursor = None
         try:
             cursor = self.connection.cursor()
-            cursor.executemany(query, params)
+            cursor.execute(query, params)
             self.connection.commit()
             logger.info(f"({self.__class__.__name__}) - INSERT SUCCESSFUL")
 
