@@ -1,5 +1,5 @@
 import httpx
-from src.config.logging_config import logger
+from config.logging_config import logger
 import schemas
 import time
 # import src.database.sqlite_handler as sql

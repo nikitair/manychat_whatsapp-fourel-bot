@@ -1,7 +1,7 @@
 import httpx
 import time
 import io
-from src.config.logging_config import logger
+from config.logging_config import logger
 from config.database import postgres
 
     
