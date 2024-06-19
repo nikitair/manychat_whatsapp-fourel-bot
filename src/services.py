@@ -55,7 +55,7 @@ def get_brokers_emails():
             logger.error(f"!!! Failed to retrieve data: {response.text}")
             has_more = False
 
-    logger.info(f"FOUND EMAILS - {result["emails"]}")
+    logger.info(f"FOUND EMAILS - {result['emails']}")
     return result
 
 
