@@ -57,11 +57,12 @@ class PostgresHandler:
             cursor = self.connection.cursor()
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
+            logger.info(f"({self.__class__.__name__}) - SUCCESSFUL SELECTION")
             # logger.debug(f"({self.__class__.__name__}) - SQL RESULT: {data}")
 
         except Exception as ex:
             logger.exception(
-                f"({self.__class__.__name__}) - !!! FAILED EXECUTING SQL QUERY - {ex}")
+                f"({self.__class__.__name__}) - !!! FAILED SELECTION - {ex}")
 
         finally:
             return data
@@ -76,7 +77,7 @@ class PostgresHandler:
             cursor = self.connection.cursor()
             cursor.execute(query, params)
             self.connection.commit()
-            logger.info(f"({self.__class__.__name__}) - INSERT SUCCESSFUL")
+            logger.info(f"({self.__class__.__name__}) - SUCCESSFUL INSERTION")
             success = True
 
         except Exception as ex:
