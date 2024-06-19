@@ -1,6 +1,6 @@
 import sys
 import psycopg2
-from src.config.logging_config import logger
+from config.logging_config import logger
 
 
 class PostgresHandler:
