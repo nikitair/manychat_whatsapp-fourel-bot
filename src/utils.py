@@ -51,7 +51,7 @@ def sql_save_quote(email: str,
             %s
         );
     """
-    params = ([email, phone_number, broker_name, quote_body, page_id, database_id])
+    params = (email, phone_number, broker_name, quote_body, page_id, database_id)
     logger.info(f"QUERY => {query}")
     logger.info(f"PARAMS => {params}")
     insert_result = postgres.execute_with_connection(
