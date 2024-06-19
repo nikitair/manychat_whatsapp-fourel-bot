@@ -17,9 +17,12 @@ class RegisterBrokerResponse(BaseModel):
 
 
 class InsertQuoteRequest(BaseModel):
-    email: str | None = None
-    database_id: str
+    email: str
+    phone_number: str
+    broker_name: str
     quote_body: str
+    database_id: str
+    page_id: str
 
 
 class InsertQuoteRequestResponse(BaseModel):

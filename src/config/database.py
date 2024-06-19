@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from database import postgres_handler
+from db import postgres_handler
 
 ROOT_DIR = os.getcwd()
 

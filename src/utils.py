@@ -1,8 +1,8 @@
 import httpx
 import time
 import io
-from pydub import AudioSegment
 from src.config.logging_config import logger
+from config.database import postgres
 
     
 def download_audio(audio_url) -> str | None:
@@ -20,4 +20,40 @@ def download_audio(audio_url) -> str | None:
                 file.write(audio_data)
             return file_name
             
+
+
+def sql_save_quote(email: str, 
+                   phone_number: str, 
+                   broker_name: str,
+                   quote_body: str,
+                   page_id: str,
+                   database_id: str
+                   ) -> bool:
+    logger.info(f"SQL INSERT QUOTE - ({email} | {quote_body} | p:{page_id} | d:{database_id})")
     
+    query = """
+        INSERT INTO whatsapp_quotes
+        (
+            email, 
+            phone_number, 
+            broker_name,
+            quote_body,
+            page_id,
+            database_id
+        )
+        VALUES
+        (
+            %s,
+            %s,
+            %s,
+            %s,
+            %s,
+            %s
+        );
+    """
+    insert_result = postgres.execute_with_connection(
+        func=postgres.insert_executor,
+        query=query,
+        params=([email, phone_number, quote_body, page_id, database_id])
+    )
+    return insert_result

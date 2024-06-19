@@ -1,7 +1,8 @@
 import httpx
 from src.config.logging_config import logger
 import schemas
-import src.database.sqlite_handler as sql
+import time
+# import src.database.sqlite_handler as sql
 import ai
 import utils
 import os
@@ -149,6 +150,7 @@ def register_broker(request: schemas.RegisterBroker):
     if status_code == 200:
         new_page = response.json()
         logger.debug(f"RAW NEW PAGE DATA - {new_page}")
+        time.sleep(2)
         page_id = new_page["id"]
         logger.info(f"CREATED PAGE FOR BROKER - {email}; Page ID: {page_id}")
 
@@ -158,13 +160,13 @@ def register_broker(request: schemas.RegisterBroker):
             logger.info(f"BROKER - {email} - SUCCESSFULLY REGISTERED")
             
             # insert to sql database
-            sql.sql_insert_broker(
-                email=email,
-                phone_number=phone_number,
-                name=name,
-                page_id=page_id,
-                database_id=database_response["id"]
-            )
+            # sql.sql_insert_broker(
+            #     email=email,
+            #     phone_number=phone_number,
+            #     name=name,
+            #     page_id=page_id,
+            #     database_id=database_response["id"]
+            # )
             
             return {
                 "page_id": page_id,
@@ -184,9 +186,27 @@ def insert_quote_request(request: schemas.InsertQuoteRequest):
     quote_body = request.quote_body
     email = request.email
 
+    phone_number = request.phone_number
+    broker_name = request.broker_name
+    quote_body = request.quote_body
+    database_id = request.database_id
+    page_id = request.page_id
+
     logger.info(f"INSERT QUOTE REQUEST FOR - {email} TO DB - {database_id}")
     logger.info(f"INSERT DATA - {quote_body}")
+    
+    # 1. save to Postgres
+    sql_save_result = utils.sql_save_quote(
+        email=email,
+        phone_number=phone_number,
+        broker_name=broker_name,
+        quote_body=quote_body,
+        page_id=page_id
+    )
+    if sql_save_result:
+        logger.info(f"SQL SUCCESSFULLY SAVED QUOTE FOR - {email}")
 
+    # 2. save to Notion
     URL = "https://api.notion.com/v1/pages"
     PAYLOAD = {
         "parent": {
@@ -212,15 +232,8 @@ def insert_quote_request(request: schemas.InsertQuoteRequest):
 
     if status_code == 200:
         logger.debug(f"RAW NOTION API RESPONSE - {response.json()}")
-        logger.info(f"SUCCESSFULLY INSERTED QUOTE FOR - {email}")
+        logger.info(f"NOTION SUCCESSFULLY SAVED QUOTE FOR - {email}")
         
-        broker_id = sql.get_broker_id(database_id=database_id)
-        logger.info(f"SQL BROKER ID - {broker_id}")
-        if broker_id:
-            sql.sql_insert_quote(
-                quote_body=quote_body,
-                broker_id=broker_id
-            )
     else:
         logger.error(f"!!! FAILED INSERTING QUOTE FOR - {email}: {response.text}")
         result["success"] = False
