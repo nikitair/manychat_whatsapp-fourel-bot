@@ -112,6 +112,7 @@ def sql_create_quote(email: str, quote_body: str):
                 %s
             );
         """
+        logger.info(f"SQL INSERTING QUOTE - ({quote_body})")
         postgres_response = postgres.execute_with_connection(
             func=postgres.insert_executor,
             query=query,
@@ -119,4 +120,4 @@ def sql_create_quote(email: str, quote_body: str):
         )
         logger.info(f"SQL POSTGRES INSERT RESPONSE - ({postgres_response})")
         return postgres_response
-        
+
