@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  whatsapp_bot:
+    image: whatsapp_bot:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    restart: always
