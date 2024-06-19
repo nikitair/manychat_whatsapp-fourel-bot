@@ -1,4 +1,4 @@
-import httpx
+import requests
 import time
 from config.logging_config import logger
 from config.database import postgres
@@ -16,7 +16,7 @@ BROKERS_DATABASE_ID = "b8a10681aded43339ec1dc13dd44ff03"
 def download_audio(audio_url) -> str | None:
     logger.info(f"DOWNLOAD AUDIO - {audio_url}")
     if audio_url:
-        response = httpx.get(audio_url)
+        response = requests.get(audio_url)
         status_code = response.status_code
         logger.info(f"STATUS CODE - {status_code}")
         
@@ -165,7 +165,7 @@ def notion_create_broker_page(email: str, phone_number: str, broker_name: str) -
         }
     }
     
-    response = httpx.post(
+    response = requests.post(
         url="https://api.notion.com/v1/pages",
         headers=NOTION_API_HEADERS,
         json=payload
@@ -202,7 +202,7 @@ def notion_create_quotes_database(email: str, page_id: str) -> str | None:
             }
         }
     }
-    response = httpx.post(
+    response = requests.post(
         url="https://api.notion.com/v1/databases",
         headers=NOTION_API_HEADERS,
         json=payload
@@ -344,7 +344,7 @@ def notion_insert_quote(quote_body: str, database_id: str, email: str) -> bool:
             }
         }
     }
-    response = httpx.post(
+    response = requests.post(
         url="https://api.notion.com/v1/pages",
         headers=NOTION_API_HEADERS,
         json=payload

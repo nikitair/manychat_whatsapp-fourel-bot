@@ -50,5 +50,5 @@ def notion_sync_brokers() -> schemas.NotionSyncQuotesResponse:
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=FastAPI)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=False)
     # uvicorn.run("main:app", host="127.0.0.1", port=8080, reload=True)
