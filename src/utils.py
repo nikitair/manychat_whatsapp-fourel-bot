@@ -73,6 +73,7 @@ def sql_save_quote(email: str,
         """
         params = ([email, phone_number, quote_body])
     logger.info(f"QUERY => {query}")
+    logger.info(f"PARAMS => {params}")
     insert_result = postgres.execute_with_connection(
         func=postgres.insert_executor,
         query=query,
