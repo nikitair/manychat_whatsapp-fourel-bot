@@ -40,7 +40,7 @@ def save_quote(request: schemas.InsertQuoteRequest):
         email=email,
         quote_body=quote_body
     )
-    if save_quote:
+    if saved_quote:
         logger.info(f"SUCCESSFULLY SAVED QUOTE - ({email} | {quote_body})")
         result["success"] = True
     
