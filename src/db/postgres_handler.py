@@ -92,7 +92,7 @@ class PostgresHandler:
         
     def update_executor(self, query: str, params: tuple = None) -> bool:
         logger.debug(
-            f"({self.__class__.__name__}) - EXECUTING INSERT QUERY: {query} - INSERT PARAMS: {params}")
+            f"({self.__class__.__name__}) - EXECUTING UPDATE QUERY: {query} - UPDATE PARAMS: {params}")
 
         cursor = None
         success = False

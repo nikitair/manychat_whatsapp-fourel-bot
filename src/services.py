@@ -102,7 +102,7 @@ def sync_brokers():
             phone_number=phone_number,
             broker_name=broker_name
         )
-        logger.info(f"REGISTRATION RESULT - ({registered})")
+        logger.info(f"NOTION REGISTRATION RESULT - ({registered})")
         if registered["success"]:
             
             # update DB

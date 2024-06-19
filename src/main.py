@@ -37,11 +37,12 @@ def transcript_voice_to_text(request: schemas.VoiceToText) -> schemas.VoiceToTex
     return services.convert_voice_to_text(request)
 
 
-@app.post("notion/register-broker")
+@app.post("/sync/brokers")
 def notion_sync_brokers() -> schemas.NotionSyncBrokersResponse:
     logger.info(f"**** API NOTION SYNC BROKERS TRIGGERED")
     return services.sync_brokers()
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=FastAPI)
+    # uvicorn.run("main:app", host="127.0.0.1", port=8080, reload=True)
