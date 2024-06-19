@@ -31,10 +31,10 @@ def insert_quote_request(request: schemas.InsertQuoteRequest) -> schemas.InsertQ
     return services.save_quote(request)
 
 
-@app.get(path="/broker")
-def get_broker_by_email(email = Query(description="Email of a searched Broker")) -> schemas.GetBrokerResponse:
-    logger.info("**** GET BROKER BY EMAIL API TRIGGERED")
-    return services.get_broker_database(email)
+# @app.get(path="/broker")
+# def get_broker_by_email(email = Query(description="Email of a searched Broker")) -> schemas.GetBrokerResponse:
+#     logger.info("**** GET BROKER BY EMAIL API TRIGGERED")
+#     return services.get_broker_database(email)
 
 
 @app.post("/voice-to-text")
