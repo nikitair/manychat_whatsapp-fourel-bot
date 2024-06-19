@@ -54,11 +54,12 @@ def get_brokers_emails():
             logger.error(f"!!! Failed to retrieve data: {response.text}")
             has_more = False
 
+    logger.info(f"FOUND EMAILS - {result["emails"]}")
     return result
 
 
-def create_whatsapp_bot_database(page_id):
-    logger.info(f"CREATE WHATSAPP BOT DATABASE ON PAGE - {page_id}")
+def create_whatsapp_bot_database(page_id, email: str = None):
+    logger.info(f"CREATE WhatsApp DATABASE FOR - {email} ON PAGE - {page_id}")
     URL = "https://api.notion.com/v1/databases"
 
     data = {
@@ -88,10 +89,10 @@ def create_whatsapp_bot_database(page_id):
     if status_code == 200:
         new_database = response.json()
         logger.debug(f"RAW NEW DATABASE DATA - {new_database}")
-        logger.info(f"WhatsApp Bot database created successfully. Database ID: {new_database['id']}")
+        logger.info(f"WhatsApp DATABASE CREATED FOR - {email}. Database ID: {new_database['id']}")
         return new_database
     else:
-        logger.error(f"Failed to create WhatsApp Bot database: {response.text}")
+        logger.error(f"!!! FAILED CREATING WhatsApp BOT DATABASE FOR - {email}: {response.text}")
         return None
 
 
@@ -149,13 +150,14 @@ def register_broker(request: schemas.RegisterBroker):
         new_page = response.json()
         logger.debug(f"RAW NEW PAGE DATA - {new_page}")
         page_id = new_page["id"]
-        logger.info(f"Record inserted successfully. Page ID: {page_id}")
+        logger.info(f"CREATED PAGE FOR BROKER - {email}; Page ID: {page_id}")
 
         # Now create a new database on the created page
         database_response = create_whatsapp_bot_database(page_id)
         if database_response:
+            logger.info(f"BROKER - {email} - SUCCESSFULLY REGISTERED")
             
-            # insert to database
+            # insert to sql database
             sql.sql_insert_broker(
                 email=email,
                 phone_number=phone_number,
@@ -172,7 +174,7 @@ def register_broker(request: schemas.RegisterBroker):
         logger.error(f"Failed to insert record: {response.text}")
 
 
-def insert_quote_request(request):
+def insert_quote_request(request: schemas.InsertQuoteRequest):
     result = {
         "success": True,
         "error": None
@@ -180,8 +182,9 @@ def insert_quote_request(request):
 
     database_id = request.database_id
     quote_body = request.quote_body
+    email = request.email
 
-    logger.info(f"INSERT QUOTE REQUEST TO DB - {database_id}")
+    logger.info(f"INSERT QUOTE REQUEST FOR - {email} TO DB - {database_id}")
     logger.info(f"INSERT DATA - {quote_body}")
 
     URL = "https://api.notion.com/v1/pages"
@@ -209,6 +212,7 @@ def insert_quote_request(request):
 
     if status_code == 200:
         logger.debug(f"RAW NOTION API RESPONSE - {response.json()}")
+        logger.info(f"SUCCESSFULLY INSERTED QUOTE FOR - {email}")
         
         broker_id = sql.get_broker_id(database_id=database_id)
         logger.info(f"SQL BROKER ID - {broker_id}")
@@ -218,7 +222,7 @@ def insert_quote_request(request):
                 broker_id=broker_id
             )
     else:
-        logger.error(f"!!! NOTION API ERROR - {response.text}")
+        logger.error(f"!!! FAILED INSERTING QUOTE FOR - {email}: {response.text}")
         result["success"] = False
         result["error"] = response.text
 
@@ -245,6 +249,7 @@ def get_broker_page(email):
     logger.info(f"STATUS CODE - {status_code}")
 
     if status_code == 200:
+        logger.info(f"PAGE FOUND FOR - {email}")
         data = response.json()
         logger.debug(f"RAW NOTION API RESPONSE - {data}")
 
@@ -254,7 +259,7 @@ def get_broker_page(email):
         else:
             return None
     else:
-        logger.error(f"!!! NOTION API ERROR - {response.text}")
+        logger.error(f"!!! FAILED FINDING PAGE FOR - {email}: {response.text}")
         return None
 
 
@@ -288,8 +293,9 @@ def get_broker_database(email):
                 if database_id:
                     result['database_id'] = database_id
                 else:
-                    logger.error(f"! Database ID not found for page ID: {page_id}")
+                    logger.error(f"!!! Database NOT found for - {email}; page ID: {page_id}")
         else:
+            logger.error(f"!!! Database NOT found for - {email}; page ID: {page_id}")
             logger.error(f"!!! NOTION API ERROR. Status code: {response.status_code}, Response: {response.text}")
     return result
 

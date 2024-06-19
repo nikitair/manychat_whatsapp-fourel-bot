@@ -17,6 +17,7 @@ class RegisterBrokerResponse(BaseModel):
 
 
 class InsertQuoteRequest(BaseModel):
+    email: str | None = None
     database_id: str
     quote_body: str
 

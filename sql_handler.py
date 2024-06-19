@@ -38,18 +38,18 @@ def sql_create_database():
 
 
 def sql_insert_broker(email, phone_number, name, page_id, database_id):
-    logger.info(f"INSERT BROKER - {email} | {phone_number} | {name} | p_id:{page_id} | d_id:{database_id}")
+    logger.info(f"SQL INSERT BROKER - {email} | {phone_number} | {name} | p_id:{page_id} | d_id:{database_id}")
     try:
         conn = sqlite3.connect('whatsapp_bot.db')
         cursor = conn.cursor()
-        logger.debug("CONNECTED TO DB")
+        logger.debug("SQL CONNECTED TO DB")
         
         cursor.execute('''INSERT INTO brokers (email, phone_number, name, page_id, database_id)
                           VALUES (?, ?, ?, ?, ?)''', (email, phone_number, name, page_id, database_id))
         
         conn.commit()
         broker_id = cursor.lastrowid
-        logger.info(f"BROKER INSERTED TO DB - {broker_id}")
+        logger.info(f"SQL BROKER - {email} - INSERTED TO DB - {broker_id}")
         
     except sqlite3.Error as e:
         logger.exception(f"!!! SQL ERROR - {e}")
@@ -57,23 +57,23 @@ def sql_insert_broker(email, phone_number, name, page_id, database_id):
     finally:
         if conn:
             conn.close()
-        logger.debug("CLOSED DB CONNECTION")
+        logger.debug("SQL CLOSED DB CONNECTION")
         
         
 
 def sql_insert_quote(quote_body, broker_id):
-    logger.info(f"INSERT QUOTE REQUEST - {quote_body} | {broker_id}")
+    logger.info(f"SQL INSERT QUOTE REQUEST - {quote_body} | {broker_id}")
     try:
         conn = sqlite3.connect('whatsapp_bot.db')
         cursor = conn.cursor()
-        logger.debug("CONNECTED TO DB")
+        logger.debug("SQL CONNECTED TO DB")
         
         cursor.execute('''INSERT INTO quote_requests (quote_body, broker_id)
                           VALUES (?, ?)''', (quote_body, broker_id))
         
         conn.commit()
         quote_id = cursor.lastrowid
-        logger.info(f"QUOTE INSERTED TO DB - {quote_id}")
+        logger.info(f"SQL QUOTE INSERTED TO DB - {quote_id}")
         
     except sqlite3.Error as e:
         logger.exception(f"!!! SQL ERROR - {e}")
@@ -81,36 +81,31 @@ def sql_insert_quote(quote_body, broker_id):
     finally:
         if conn:
             conn.close()
-        logger.debug("CLOSED DB CONNECTION")
+        logger.debug("SQL CLOSED DB CONNECTION")
         
         
         
-def get_broker_id(database_id):
+def get_broker_id(database_id: str):
+    logger.info(f"SQL GET BROKER ID - {database_id}")
     try:
-        # Step 1: Connect to SQLite database
         conn = sqlite3.connect('whatsapp_bot.db')
-        
-        # Step 2: Create a cursor object using the cursor() method
         cursor = conn.cursor()
+        cursor.execute('''SELECT id, email FROM brokers WHERE database_id = ?''', (database_id,))
         
-        # Step 3: Execute the SELECT statement
-        cursor.execute('''SELECT id FROM brokers WHERE database_id = ?''', (database_id,))
+        broker_data = cursor.fetchone()
+        logger.debug(f"SQL BROKER DATA - {broker_data}")
         
-        # Fetch the result (assuming there should be only one row)
-        broker_id = cursor.fetchone()
-        
-        if broker_id:
-            return broker_id[0]  # Return the first column value (broker_id)
+        if broker_data:
+            return broker_data[0]
         else:
-            print(f"No broker found with database_id {database_id}")
+            logger.warning(f"! SQL NO BROKER FOUND - {database_id}")
             return None
         
     except sqlite3.Error as e:
-        print(f"Error retrieving broker_id: {e}")
+        logger.exception(f"!!! SQL ERROR RETRIEVING BROKER: {e}")
         return None
         
     finally:
-        # Step 4: Close the database connection
         if conn:
             conn.close()
     
