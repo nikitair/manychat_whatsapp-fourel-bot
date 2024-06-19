@@ -15,32 +15,32 @@ def index():
 
 @app.get("/brokers")
 def get_broker() -> schemas.BrokersResponse:
-    logger.info("**** GET REGISTERED BROKERS API TRIGGERED")
+    logger.info("**** API GET REGISTERED BROKERS TRIGGERED")
     return services.get_registered_brokers()
 
 
 @app.post("/brokers/register")
 def register_broker(request: schemas.RegisterBroker) -> schemas.RegisterBrokerResponse:
-    logger.info("**** REGISTER BROKER API TRIGGERED")
+    logger.info("**** API REGISTER BROKER TRIGGERED")
     return services.register_broker(request)
 
 
 @app.post("/quote")
 def insert_quote_request(request: schemas.InsertQuoteRequest) -> schemas.InsertQuoteRequestResponse:
-    logger.info("**** INSERT QUOTE REQUEST API TRIGGERED")
+    logger.info("**** API INSERT QUOTE REQUEST TRIGGERED")
     return services.save_quote(request)
-
-
-# @app.get(path="/broker")
-# def get_broker_by_email(email = Query(description="Email of a searched Broker")) -> schemas.GetBrokerResponse:
-#     logger.info("**** GET BROKER BY EMAIL API TRIGGERED")
-#     return services.get_broker_database(email)
 
 
 @app.post("/voice-to-text")
 def transcript_voice_to_text(request: schemas.VoiceToText) -> schemas.VoiceToTextResponse:
-    logger.info("***** VOICE TO TEXT API TRIGGERED")
+    logger.info("***** API VOICE TO TEXT TRIGGERED")
     return services.convert_voice_to_text(request)
+
+
+@app.post("notion/register-broker")
+def notion_sync_brokers() -> schemas.NotionSyncBrokersResponse:
+    logger.info(f"**** API NOTION SYNC BROKERS TRIGGERED")
+    return services.sync_brokers()
 
 
 if __name__ == "__main__":

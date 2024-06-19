@@ -1,24 +1,13 @@
-import httpx
 from config.logging_config import logger
 import schemas
-import time
-# import src.database.sqlite_handler as sql
 import ai
 import utils
 import os
 
-NOTION_API_HEADERS = {
-    "Authorization": "Bearer secret_hcJF8bCOLP1ZcOR54a8kmWJ0dFMssHjEOWhSnvA0mN2",
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-06-28"
-}
-
-BROKERS_DATABASE_ID = "b8a10681aded43339ec1dc13dd44ff03"
-
 
 def get_registered_brokers():
     logger.info(f"GET REGISTERED BROKERS")
-    brokers = utils.sql_get_brokers()
+    brokers = utils.sql_get_broker_emails()
     logger.info(f"REGISTERED BROKERS - ({brokers})")
     return {"emails": brokers}
 
@@ -84,6 +73,10 @@ def convert_voice_to_text(request: schemas.VoiceToText):
             logger.exception(f"!!! FAILED DELETING AUDIO FILE - {ex}")
             
     return result
+
+
+def sync_brokers():
+    ...
 
 
 # LEGACY

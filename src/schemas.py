@@ -22,11 +22,6 @@ class InsertQuoteRequest(BaseModel):
 
 class InsertQuoteRequestResponse(BaseModel):
     success: bool
-    
-    
-# class GetBrokerResponse(BaseModel):
-#     page_id: str | None = None
-#     database_id: str | None = None
 
 
 class VoiceToText(BaseModel):
@@ -35,3 +30,7 @@ class VoiceToText(BaseModel):
     
 class VoiceToTextResponse(BaseModel):
     text: str
+
+
+class NotionSyncBrokersResponse(BaseModel):
+    success: bool

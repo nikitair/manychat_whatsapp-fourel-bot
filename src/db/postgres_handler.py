@@ -89,6 +89,29 @@ class PostgresHandler:
             if cursor:
                 cursor.close()
             return success
+        
+    def update_executor(self, query: str, params: tuple) -> bool:
+        logger.debug(
+            f"({self.__class__.__name__}) - EXECUTING INSERT QUERY: {query} - INSERT PARAMS: {params}")
+
+        cursor = None
+        success = False
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(query, params)
+            self.connection.commit()
+            logger.info(f"({self.__class__.__name__}) - SUCCESSFUL UPDATE")
+            success = True
+
+        except Exception as ex:
+            self.connection.rollback()
+            logger.exception(
+                f"({self.__class__.__name__}) - !!! FAILED UPDATING - {ex}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            return success
             
 
     def delete_executor(self, query: str, params: list, safe: bool = True):
