@@ -76,7 +76,50 @@ def convert_voice_to_text(request: schemas.VoiceToText):
 
 
 def sync_brokers():
-    ...
+    logger.info(f"SYNCHRONIZE BROKERS WITH NOTION")
+    result = {
+        "sync_brokers": []
+        }
+    
+    # get brokers to sync
+    brokers_to_sync = utils.sql_get_brokers_for_notion_sync()
+    logger.info(f"{len(brokers_to_sync)} BROKERS FOUND FOR SYNC")
+    logger.info(f"BROKERS TO SYNC - ({brokers_to_sync})")
+    if not brokers_to_sync:
+        logger.warning("NO BROKERS TO SYNC")
+        return result
+    
+    # iterate through brokers
+    for i, broker in enumerate(brokers_to_sync, start=1):
+        email = broker["email"]
+        phone_number = broker["phone_number"]
+        broker_name = broker["broker_name"]
+        logger.info(f"BROKER #{i}: ({email} | {phone_number} | {broker_name})")
+        
+        # register in notion
+        registered = utils.notion_register_broker(
+            email=email,
+            phone_number=phone_number,
+            broker_name=broker_name
+        )
+        logger.info(f"REGISTRATION RESULT - ({registered})")
+        if registered["success"]:
+            
+            # update DB
+            page_id = registered["page_id"]
+            database_id = registered["database_id"]
+            
+            updated = utils.sql_update_broker_notion_status(
+                email=email,
+                page_id=page_id,
+                database_id=database_id
+            )
+            if updated:
+                logger.info(f"BROKER - ({email}) SUCCESSFULLY SYNCHRONIZED")
+                result["sync_brokers"].append(broker)
+    return result
+        
+        
 
 
 # LEGACY

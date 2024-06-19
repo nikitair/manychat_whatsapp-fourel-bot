@@ -90,7 +90,7 @@ class PostgresHandler:
                 cursor.close()
             return success
         
-    def update_executor(self, query: str, params: tuple) -> bool:
+    def update_executor(self, query: str, params: tuple = None) -> bool:
         logger.debug(
             f"({self.__class__.__name__}) - EXECUTING INSERT QUERY: {query} - INSERT PARAMS: {params}")
 

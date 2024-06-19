@@ -33,4 +33,4 @@ class VoiceToTextResponse(BaseModel):
 
 
 class NotionSyncBrokersResponse(BaseModel):
-    success: bool
+    sync_brokers: list[dict]

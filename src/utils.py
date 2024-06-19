@@ -247,19 +247,20 @@ def notion_register_broker(email: str, phone_number: str, broker_name: str) -> d
     return result
         
         
-def sql_update_broker_notion_status(email: str) -> bool:
-    logger.info(f"SQL UPDATE NOTION STATUS - ({email})")
-    query = """
+def sql_update_broker_notion_status(email: str, page_id: str, database_id: str) -> bool:
+    logger.info(f"SQL UPDATE NOTION STATUS - ({email} | p: {page_id} | d: {database_id})")
+    query = f"""
         UPDATE whatsapp_brokers
         SET
-            in_notion = TRUE
+            in_notion = TRUE,
+            page_id = '{page_id}',
+            database_id = '{database_id}'
         WHERE
-            email = %s
+            email = '{email}'
     """
     postgres_response = postgres.execute_with_connection(
         func=postgres.update_executor,
-        query=query,
-        params=tuple([email])
+        query=query
     )
     logger.info(f"SQL POSTGRES UPDATE RESPONSE - ({postgres_response})")
     return postgres_response
