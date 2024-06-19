@@ -10,7 +10,7 @@ app = FastAPI()
 @app.get("/")
 def index():
     # logger.info("INDEX API TRIGGERED")
-    return {"service": "Fourel WhatsApp Bot"}
+    return {"service": "Fourel: WhatsApp Bot"}
 
 
 @app.get("/brokers")
