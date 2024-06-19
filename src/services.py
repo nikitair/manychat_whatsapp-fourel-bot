@@ -201,6 +201,7 @@ def insert_quote_request(request: schemas.InsertQuoteRequest):
         phone_number=phone_number,
         broker_name=broker_name,
         quote_body=quote_body,
+        database_id=database_id,
         page_id=page_id
     )
     if sql_save_result:
