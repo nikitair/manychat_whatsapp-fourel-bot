@@ -30,14 +30,14 @@ class PostgresHandler:
                     host=self.host,
                     port=self.port
                 )
-            logger.info(f"({self.__class__.__name__}) - CONNECTED TO Postgres DATABASE")
+            logger.info(f"({self.__class__.__name__}) - CONNECTED TO Postgres")
         except Exception as ex:
             logger.exception(f"({self.__class__.__name__}) - !!! FAILED CONNECTING TO Postgres DATABASE - {ex}")
 
     def disconnect(self):
         if self.connection:
             self.connection.close()
-            logger.info(f"({self.__class__.__name__}) - CLOSED Postgres DATABASE CONNECTION")
+            logger.info(f"({self.__class__.__name__}) - CLOSED Postgres CONNECTION")
 
     def execute_with_connection(self, func, *args, **kwargs):
         try:
@@ -57,7 +57,7 @@ class PostgresHandler:
             cursor = self.connection.cursor()
             cursor.execute(query, tuple(params))
             data = cursor.fetchall()
-            logger.debug(f"({self.__class__.__name__}) - SQL RESULT: {data}")
+            # logger.debug(f"({self.__class__.__name__}) - SQL RESULT: {data}")
 
         except Exception as ex:
             logger.exception(
@@ -66,26 +66,29 @@ class PostgresHandler:
         finally:
             return data
 
-    def insert_executor(self, query: str, params: tuple):
+    def insert_executor(self, query: str, params: tuple) -> bool:
         logger.debug(
             f"({self.__class__.__name__}) - EXECUTING INSERT QUERY: {query} - INSERT PARAMS: {params}")
 
         cursor = None
+        success = False
         try:
             cursor = self.connection.cursor()
             cursor.execute(query, params)
             self.connection.commit()
             logger.info(f"({self.__class__.__name__}) - INSERT SUCCESSFUL")
+            success = True
 
         except Exception as ex:
             self.connection.rollback()
             logger.exception(
                 f"({self.__class__.__name__}) - !!! FAILED INSERTION - {ex}")
-        else:
-            return True
+
         finally:
             if cursor:
                 cursor.close()
+            return success
+            
 
     def delete_executor(self, query: str, params: list, safe: bool = True):
         logger.warning(

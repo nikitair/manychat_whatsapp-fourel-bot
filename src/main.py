@@ -15,8 +15,8 @@ def index():
 
 @app.get("/brokers")
 def get_broker() -> schemas.BrokersResponse:
-    logger.info("GET REGISTERED BROKERS API TRIGGERED")
-    return services.get_brokers_emails()
+    logger.info("**** GET REGISTERED BROKERS API TRIGGERED")
+    return services.get_registered_brokers()
 
 
 @app.post("/brokers/register")
@@ -28,7 +28,7 @@ def register_broker(request: schemas.RegisterBroker) -> schemas.RegisterBrokerRe
 @app.post("/quote")
 def insert_quote_request(request: schemas.InsertQuoteRequest) -> schemas.InsertQuoteRequestResponse:
     logger.info("**** INSERT QUOTE REQUEST API TRIGGERED")
-    return services.insert_quote_request(request)
+    return services.save_quote(request)
 
 
 @app.get(path="/broker")

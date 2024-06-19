@@ -12,27 +12,21 @@ class RegisterBroker(BaseModel):
 
 
 class RegisterBrokerResponse(BaseModel):
-    page_id: str
-    database_id: str
+    success: bool
 
 
 class InsertQuoteRequest(BaseModel):
     email: str
-    phone_number: str
-    broker_name: str
     quote_body: str
-    database_id: str
-    page_id: str
 
 
 class InsertQuoteRequestResponse(BaseModel):
     success: bool
-    error: str | None = None
     
     
-class GetBrokerResponse(BaseModel):
-    page_id: str | None = None
-    database_id: str | None = None
+# class GetBrokerResponse(BaseModel):
+#     page_id: str | None = None
+#     database_id: str | None = None
 
 
 class VoiceToText(BaseModel):
