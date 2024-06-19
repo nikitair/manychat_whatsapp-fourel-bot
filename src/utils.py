@@ -31,47 +31,27 @@ def sql_save_quote(email: str,
                    ) -> bool:
     logger.info(f"SQL INSERT QUOTE - ({email} | {quote_body} | p:{page_id} | d:{database_id})")
     
-    if page_id and database_id:
-    
-        query = """
-            INSERT INTO whatsapp_quotes
-            (
-                email, 
-                phone_number, 
-                broker_name,
-                quote_body,
-                page_id,
-                database_id
-            )
-            VALUES
-            (
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s
-            );
-        """
-        params = ([email, phone_number, quote_body, page_id, database_id])
-    else:
-        query = """
-            INSERT INTO whatsapp_quotes
-            (
-                email, 
-                phone_number, 
-                broker_name,
-                quote_body
-            )
-            VALUES
-            (
-                %s,
-                %s,
-                %s,
-                %s
-            );
-        """
-        params = ([email, phone_number, quote_body])
+    query = """
+        INSERT INTO whatsapp_quotes
+        (
+            email, 
+            phone_number, 
+            broker_name,
+            quote_body,
+            page_id,
+            database_id
+        )
+        VALUES
+        (
+            %s,
+            %s,
+            %s,
+            %s,
+            %s,
+            %s
+        );
+    """
+    params = ([email, phone_number, broker_name, quote_body, page_id, database_id])
     logger.info(f"QUERY => {query}")
     logger.info(f"PARAMS => {params}")
     insert_result = postgres.execute_with_connection(
